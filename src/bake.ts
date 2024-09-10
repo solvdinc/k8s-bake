@@ -3,14 +3,14 @@
 
 import * as core from '@actions/core'
 import * as ioUtil from '@actions/io/lib/io-util'
-import {ExecOptions} from '@actions/exec/lib/interfaces'
+import { ExecOptions } from '@actions/exec/lib/interfaces'
 import * as utilities from './utilities'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as util from 'util'
-import {getHelmPath, NameValuePair} from './helm-util'
-import {getKubectlPath} from './kubectl-util'
-import {getKomposePath} from './kompose-util'
+import { getHelmPath, NameValuePair } from './helm-util'
+import { getKubectlPath } from './kubectl-util'
+import { getKomposePath } from './kompose-util'
 
 abstract class RenderEngine {
    public bake!: (isSilent: boolean) => Promise<any>
@@ -30,7 +30,7 @@ abstract class RenderEngine {
 export class HelmRenderEngine extends RenderEngine {
    public bake = async (isSilent: boolean): Promise<any> => {
       const helmPath = await getHelmPath()
-      const chartPath = core.getInput('helmChart', {required: true})
+      const chartPath = core.getInput('helmChart', { required: false }) ? core.getInput('helmChart', { required: false }) : "../CD/helm/application-chart"
 
       const options = {
          silent: isSilent
@@ -107,13 +107,13 @@ export class HelmRenderEngine extends RenderEngine {
       chartPath: string,
       isV3: boolean
    ): Promise<string[]> {
-      const releaseName = core.getInput('releaseName', {required: false})
+      const releaseName = core.getInput('releaseName', { required: false })
       let args: string[] = []
       args.push('template')
       const templateArgs = await getTemplateArguments()
       args = args.concat(templateArgs)
 
-      const namespace = core.getInput('namespace', {required: false})
+      const namespace = core.getInput('namespace', { required: false })
       if (namespace) {
          args.push('--namespace')
          args.push(namespace)
@@ -145,7 +145,7 @@ export class HelmRenderEngine extends RenderEngine {
          }
       }
 
-      const overridesInput = core.getInput('overrides', {required: false})
+      const overridesInput = core.getInput('overrides', { required: false })
       if (!!overridesInput) {
          core.debug('Adding overrides inputs')
          const overrides = overridesInput.split('\n')
@@ -164,7 +164,7 @@ export class HelmRenderEngine extends RenderEngine {
       let result = await utilities.execCommand(
          path,
          ['version', '--template', '{{.Version}}'],
-         {silent: true}
+         { silent: true }
       )
       return result.stdout.split('.')[0] === 'v3'
    }
@@ -250,7 +250,7 @@ export class KustomizeRenderEngine extends RenderEngine {
          if (
             !clientVersion ||
             parseFloat(versionNumber) <
-               parseFloat(utilities.MIN_KUBECTL_CLIENT_VERSION)
+            parseFloat(utilities.MIN_KUBECTL_CLIENT_VERSION)
          ) {
             throw new Error(
                'kubectl client version equal to v1.14 or higher is required to use kustomize features'
@@ -262,7 +262,7 @@ export class KustomizeRenderEngine extends RenderEngine {
 
 async function getTemplateArguments() {
    const args: string[] = []
-   const additionalArgs = core.getInput('arguments', {required: false})
+   const additionalArgs = core.getInput('arguments', { required: false })
    if (!!additionalArgs) {
       const argumentArray = additionalArgs
          .split(/[\n,;]+/) // split into each line
@@ -279,7 +279,7 @@ async function getTemplateArguments() {
 
 export async function run() {
    try {
-      const renderType = core.getInput('renderEngine', {required: true})
+      const renderType = core.getInput('renderEngine', { required: true })
       let renderEngine: RenderEngine
       switch (renderType) {
          case 'helm':
@@ -296,7 +296,7 @@ export async function run() {
             throw Error('Unknown render engine')
       }
 
-      let isSilent = core.getInput('silent', {required: false}) === 'true'
+      let isSilent = core.getInput('silent', { required: false }) === 'true'
 
       try {
          await renderEngine.bake(isSilent)
