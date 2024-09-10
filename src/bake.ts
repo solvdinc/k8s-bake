@@ -30,7 +30,8 @@ abstract class RenderEngine {
 export class HelmRenderEngine extends RenderEngine {
    public bake = async (isSilent: boolean): Promise<any> => {
       const helmPath = await getHelmPath()
-      const chartPath = core.getInput('helmChart', { required: false }) != undefined ? core.getInput('helmChart', { required: false }) : "../CD/helm/application-chart"
+      const tempDirectory = process.env['RUNNER_TEMP']
+      const chartPath = core.getInput('helmChart', { required: false }) != undefined ? core.getInput('helmChart', { required: false }) : tempDirectory + "/CD/helm/application-chart/"
 
       const options = {
          silent: isSilent
