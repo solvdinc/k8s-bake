@@ -39,7 +39,7 @@ export class HelmRenderEngine extends RenderEngine {
       });
 
       console.log("Helm directory files: ");
-      fs.readdirSync("./CD/helm").forEach(file => {
+      fs.readdirSync("./CD/").forEach(file => {
          console.log(file);
       });
 
