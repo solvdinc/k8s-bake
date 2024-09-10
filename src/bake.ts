@@ -34,6 +34,8 @@ export class HelmRenderEngine extends RenderEngine {
       const tempDirectory = process.env['RUNNER_TEMP']
       const chartPath = core.getInput('helmChart', { required: false }) != "" ? core.getInput('helmChart', { required: false }) : "./chart/default-chart/"
 
+      console.log("Process exec path:" + process.execPath)
+
       console.log("Process directory files: ");
       fs.readdirSync(process.execPath).forEach(file => {
          console.log(file);
