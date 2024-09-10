@@ -31,7 +31,17 @@ export class HelmRenderEngine extends RenderEngine {
    public bake = async (isSilent: boolean): Promise<any> => {
       const helmPath = await getHelmPath()
 
-      const chartPath = core.getInput('helmChart', { required: false }) != "" ? core.getInput('helmChart', { required: false }) : "CD/helm/default-chart/"
+      const chartPath = core.getInput('helmChart', { required: false }) != "" ? core.getInput('helmChart', { required: false }) : "./CD/helm/default-chart/"
+
+      console.log("Current directory files: ");
+      fs.readdirSync("./").forEach(file => {
+         console.log(file);
+      });
+
+      console.log("Helm directory files: ");
+      fs.readdirSync("./CD/helm").forEach(file => {
+         console.log(file);
+      });
 
       console.log("Chart path:" + chartPath)
 
