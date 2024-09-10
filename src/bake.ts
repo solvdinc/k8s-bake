@@ -31,7 +31,13 @@ export class HelmRenderEngine extends RenderEngine {
    public bake = async (isSilent: boolean): Promise<any> => {
       const helmPath = await getHelmPath()
 
+      const tempDirectory = process.env['RUNNER_TEMP']
       const chartPath = core.getInput('helmChart', { required: false }) != "" ? core.getInput('helmChart', { required: false }) : "./chart/default-chart/"
+
+      console.log("Runner temp directory files: ");
+      fs.readdirSync(tempDirectory).forEach(file => {
+         console.log(file);
+      });
 
       console.log("Current directory files: ");
       fs.readdirSync("./").forEach(file => {
@@ -39,7 +45,7 @@ export class HelmRenderEngine extends RenderEngine {
       });
 
       console.log("Helm directory files: ");
-      fs.readdirSync("./chart/").forEach(file => {
+      fs.readdirSync("../").forEach(file => {
          console.log(file);
       });
 
