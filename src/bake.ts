@@ -31,13 +31,12 @@ export class HelmRenderEngine extends RenderEngine {
    public bake = async (isSilent: boolean): Promise<any> => {
       const helmPath = await getHelmPath()
 
+      /**
+       * This is a hack implementation for creating the deployment content from the base template we provide.
+       * 
+       */
       const actionPath = __dirname.replace("/lib", "")
       const chartPath = core.getInput('helmChart', { required: false }) != "" ? core.getInput('helmChart', { required: false }) : actionPath + "/chart/default-chart/"
-
-      console.log("Action directory files: ");
-      fs.readdirSync(actionPath).forEach(file => {
-         console.log(file);
-      });
 
       console.log("Chart path:" + chartPath)
 
