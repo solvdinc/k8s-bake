@@ -31,17 +31,11 @@ export class HelmRenderEngine extends RenderEngine {
    public bake = async (isSilent: boolean): Promise<any> => {
       const helmPath = await getHelmPath()
 
-      const chartPath = core.getInput('helmChart', { required: false }) != "" ? core.getInput('helmChart', { required: false }) : "./chart/default-chart/"
-
-      console.log("Currenti dirname: " + __dirname)
+      const actionPath = __dirname.replace("/lib", "")
+      const chartPath = core.getInput('helmChart', { required: false }) != "" ? core.getInput('helmChart', { required: false }) : actionPath + "/chart/default-chart/"
 
       console.log("Action directory files: ");
-      fs.readdirSync("/home/runner/work/_actions/solvdinc/k8s-bake/release/3.0.5-OW/").forEach(file => {
-         console.log(file);
-      });
-
-      console.log("Current directory files: ");
-      fs.readdirSync("./").forEach(file => {
+      fs.readdirSync(actionPath).forEach(file => {
          console.log(file);
       });
 
