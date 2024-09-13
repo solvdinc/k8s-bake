@@ -185,19 +185,20 @@ export class HelmRenderEngine extends RenderEngine {
       }
 
       const applicationVariablesInput = core.getInput('applicationVariables', { required: false })
-      let applicationVariablesAsJson = JSON.parse(applicationVariablesInput)
-      let applicationVariables = {}
-      if (!!applicationVariablesInput) {
-         core.debug('Adding application variables inputs')
-         args.push('--set-json')
-         for (const key in applicationVariablesAsJson) {
-            if (key.startsWith("ENV_")) {
-               const secretKey = key.replace("ENV_", "")
-               applicationSecrets[secretKey] = applicationSecretsAsJson[key];
-            }
-         }
-         args.push(`applicationVariables=${JSON.stringify(applicationVariables)}`)
-      }
+      // let applicationVariablesAsJson = JSON.parse(applicationVariablesInput)
+      // let applicationVariables = {}
+      // if (!!applicationVariablesInput) {
+      //    core.debug('Adding application variables inputs')
+      //    args.push('--set-json')
+      //    for (const key in applicationVariablesAsJson) {
+      //       if (key.startsWith("ENV_")) {
+      //          const secretKey = key.replace("ENV_", "")
+      //          applicationSecrets[secretKey] = applicationSecretsAsJson[key];
+      //       }
+      //    }
+      //args.push(`applicationVariables=${JSON.stringify(applicationVariablesInput)}`)
+      args.push(`applicationVariables=${applicationVariablesInput}`)
+      // }
 
       return args
 
