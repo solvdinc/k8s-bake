@@ -40,10 +40,10 @@ spec:
           env:
           {{- range $key, $val := .Values.applicationSecrets }}
           - name: {{ $key }}
-          valueFrom:
-            secretKeyRef:
-              name: {{ $.Values.nameOverride }}
-              key: {{ $key }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $.Values.nameOverride }}
+                key: {{ $key }}
           {{- end }}
           {{- end }}
           ports:
