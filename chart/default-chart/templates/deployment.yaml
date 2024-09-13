@@ -38,6 +38,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if or .Values.applicationSecrets .Values.applicationVariables }}
           env:
+          {{- if .Values.applicationSecrets }}
           {{- range $key, $val := .Values.applicationSecrets }}
           - name: {{ $key }}
             valueFrom:
@@ -45,12 +46,15 @@ spec:
                 name: {{ $.Values.nameOverride }}
                 key: {{ $key }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.applicationVariables }}
           {{- range $key, $val := .Values.applicationVariables }}
           - name: {{ $key }}
             valueFrom:
               configMapKeyRef:
                 name: {{ $.Values.nameOverride }}
                 key: {{ $key }}
+          {{- end }}
           {{- end }}
           {{- end }}
           ports:
