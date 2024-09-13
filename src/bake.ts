@@ -178,7 +178,7 @@ export class HelmRenderEngine extends RenderEngine {
          for (const key in applicationSecretsAsJson) {
             applicationSecrets[key] = applicationSecretsAsJson[key];
          }
-         args.push(`applicationSecrets=${applicationSecrets}`)
+         args.push(`applicationSecrets=${JSON.stringify(applicationSecrets)}`)
       }
 
       return args
