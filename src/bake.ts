@@ -115,6 +115,7 @@ export class HelmRenderEngine extends RenderEngine {
       chartPath: string,
       isV3: boolean
    ): Promise<string[]> {
+
       const releaseName = core.getInput('releaseName', { required: false })
       let args: string[] = []
       args.push('template')
@@ -137,11 +138,13 @@ export class HelmRenderEngine extends RenderEngine {
             args.push(releaseName)
          }
       }
+
       args.push(chartPath)
 
       const overrideFilesInput = core.getInput('overrideFiles', {
          required: false
       })
+
       if (!!overrideFilesInput) {
          core.debug('Adding overrides file inputs')
          const overrideFiles = overrideFilesInput.split('\n')
@@ -165,7 +168,16 @@ export class HelmRenderEngine extends RenderEngine {
             })
          }
       }
+
+      const applicationSecretsInput = core.getInput('applicationSecrets', { required: false })
+      if (!!applicationSecretsInput) {
+         core.debug('Adding overrides inputs')
+         args.push('--set-json')
+         args.push(`applicationSecrets=${applicationSecretsInput}`)
+      }
+
       return args
+
    }
 
    private async isHelmV3(path: string) {

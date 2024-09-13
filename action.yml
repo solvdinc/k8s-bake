@@ -12,6 +12,12 @@ inputs:
    arguments:
       description: 'Acceptable values: helm or kustomize. Arguments to be passed to the Helm or kustomize template command'
       required: false
+   applicationSecrets:
+      description: 'Secrets to be deployed into Kubernetes, related to the application. Input must be passed as JSON string.'
+      required: false
+   applicationVariables:
+      description: 'Variables to be deployed into Kubernetes, related to the application. Input must be passed as JSON string.'
+      required: false
    overrideFiles:
       description: 'Relevant if renderEngine == helm. Array of path to override files. Each path should be mentioned on a newline'
       required: false
