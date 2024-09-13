@@ -177,7 +177,8 @@ export class HelmRenderEngine extends RenderEngine {
          args.push('--set-json')
          for (const key in applicationSecretsAsJson) {
             if (key.startsWith("ENV_")) {
-               applicationSecrets[key] = Buffer.from(applicationSecretsAsJson[key], 'base64').toString();
+               const bufferedValue = Buffer.from(applicationSecretsAsJson[key], 'base64')
+               applicationSecrets[key] = bufferedValue.toString();
             }
          }
          args.push(`applicationSecrets=${JSON.stringify(applicationSecrets)}`)
