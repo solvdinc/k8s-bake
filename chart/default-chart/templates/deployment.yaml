@@ -45,6 +45,13 @@ spec:
                 name: {{ $.Values.nameOverride }}
                 key: {{ $key }}
           {{- end }}
+          {{- range $key, $val := .Values.applicationVariables }}
+          - name: {{ $key }}
+            valueFrom:
+              configMapKeyRef:
+                name: {{ $.Values.nameOverride }}
+                key: {{ $key }}
+          {{- end }}
           {{- end }}
           ports:
             - name: http
