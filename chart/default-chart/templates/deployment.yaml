@@ -42,7 +42,7 @@ spec:
           - name: {{ $key }}
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.nameOverride }}
+              name: {{ $.Values.nameOverride }}
               key: {{ $key }}
           {{- end }}
           {{- end }}
