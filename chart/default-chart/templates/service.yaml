@@ -4,6 +4,10 @@ metadata:
   name: {{ .Values.nameOverride }}
   labels:
     {{- include "application-chart.labels" . | nindent 4 }}
+  {{- if eq "LoadBalancer" .Values.service.type }}
+  annotations:
+    service.beta.kubernetes.io/azure-dns-label-name: {{ .Values.service.nameOverride }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
