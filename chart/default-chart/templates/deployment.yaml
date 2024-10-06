@@ -94,7 +94,8 @@ spec:
           {{- end }}  
       volumes:
         - name: tls
-          persistentVolumeClaim: {{ printf "%v%v" .Values.nameOverride "-tls" }}
+          secret:
+            secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
         {{- range .Values.volumes }}
         - name: {{ printf "%v-%v" $.Values.image.tag .name | trunc 63 | trimSuffix "-" }}
           persistentVolumeClaim: {{ printf "%v-%v-%v" $.Values.image.tag .name "claim" | trunc 63 | trimSuffix "-" }}
