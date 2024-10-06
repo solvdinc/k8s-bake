@@ -45,6 +45,9 @@ inputs:
    silent:
       description: 'When set to true, the output of the bake command would not be shown.'
       required: false
+   debug:
+      description: 'Debug the output YAML'
+      required: false
 
 outputs:
    manifestsBundle:

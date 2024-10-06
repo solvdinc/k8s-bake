@@ -128,6 +128,11 @@ export class HelmRenderEngine extends RenderEngine {
          args.push(namespace)
       }
 
+      const debug = core.getInput('debug', { required: false })
+      if (debug) {
+         args.push('--debug')
+      }
+
       if (isV3) {
          if (releaseName) {
             args.push(releaseName)
