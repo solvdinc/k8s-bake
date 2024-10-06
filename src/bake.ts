@@ -169,8 +169,8 @@ export class HelmRenderEngine extends RenderEngine {
             const overrideValues = this.getOverrideValues(overrides)
             overrideValues.forEach((overrideValue) => {
                args.push('--set')
-               let dryValue = overrideValue.value.startsWith("") ? overrideValue.value.substring(1) : overrideValue.value
-               dryValue = overrideValue.value.endsWith("") ? overrideValue.value.substring(-1) : overrideValue.value
+               let dryValue = overrideValue.value.startsWith("\"") ? overrideValue.value.substring(1) : overrideValue.value
+               dryValue = overrideValue.value.endsWith("\"") ? overrideValue.value.substring(-1) : overrideValue.value
                args.push(`${overrideValue.name}=${dryValue}`)
             })
          }
