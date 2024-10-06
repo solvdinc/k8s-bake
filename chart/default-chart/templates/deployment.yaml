@@ -87,7 +87,7 @@ spec:
               mountPath: "/etc/ssl/nginx"
               readOnly: true
             {{- range .Values.volumes }}
-              - name: {{ printf "%s-%s" ".Release.Name" .name | trunc 63 | trimSuffix "-" }}
+              - name: {{ printf "%s-%s" .Release.Name .name | trunc 63 | trimSuffix "-" }}
               mountPath: {{ .mountPath }}
               readOnly: true
             {{- end }}
@@ -97,7 +97,7 @@ spec:
           mountPath: "/etc/ssl/nginx"
           readOnly: true
         {{- range .Values.volumes }}
-        - name: {{ printf "%s-%s" ".Release.Name" .name | trunc 63 | trimSuffix "-" }}
+        - name: {{ printf "%s-%s" .Release.Name .name | trunc 63 | trimSuffix "-" }}
           mountPath: {{ .mountPath }}
           readOnly: {{ default "false" .readOnly }}
         {{- end }}  
