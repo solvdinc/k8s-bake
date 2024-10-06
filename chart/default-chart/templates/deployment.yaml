@@ -61,27 +61,43 @@ spec:
             - name: https
               containerPort: 443
               protocol: TCP
-            {{ if .Values.service.targetPort }}
+            {{- if .Values.service.targetPort }}
             - name: app
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
             {{- end }}
+            {{- range .Values.service.additionalPorts }}
+            - name: {{ .name }}
+              targetPort: {{ .targetPort }}
+              protocol: {{ default "TCP" .protocol }}
+            {{- end }}
+          {{- if .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
+          {{- if .Values.volumeMounts }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
+            - name: tls
+              mountPath: "/etc/ssl/nginx"
+              readOnly: true
+            {{- range .Values.volumes }}
+              - name: {{ "%s-%s" ".Release.Name" .name | trunc 63 | trimSuffix "-" }}
+              mountPath: {{ .mountPath }}
+              readOnly: true
+            {{- end }}
           {{- end }}
       volumes:
         - name: tls
           mountPath: "/etc/ssl/nginx"
           readOnly: true
-        {{- with .Values.volumes }}
-        - name: {{ .name }}
+        {{- range .Values.volumes }}
+        - name: {{ "%s-%s" ".Release.Name" .name | trunc 63 | trimSuffix "-" }}
           mountPath: {{ .mountPath }}
           readOnly: {{ default "false" .readOnly }}
         {{- end }}  

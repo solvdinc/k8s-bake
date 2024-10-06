@@ -146,49 +146,6 @@ export class HelmRenderEngine extends RenderEngine {
 
       args.push(chartPath)
 
-      // const overridesInput = core.getInput('overrides', { required: false })
-      // if (!!overridesInput) {
-      //    core.debug('Adding overrides inputs')
-      //    const overrides = overridesInput.split('\n')
-      //    if (overrides.length > 0) {
-      //       const overrideValues = this.getOverrideValues(overrides)
-      //       overrideValues.forEach((overrideValue) => {
-      //          args.push('--set')
-      //          args.push(`${overrideValue.name}=${overrideValue.value}`)
-      //       })
-      //    }
-      // }
-
-      // const applicationSecretsInput = core.getInput('applicationSecrets', { required: false })
-      // let applicationSecretsAsJson = JSON.parse(applicationSecretsInput)
-      // let applicationSecrets = {}
-      // if (!!applicationSecretsInput) {
-      //    core.debug('Adding application secret inputs')
-      //    args.push('--set-json')
-      //    for (const key in applicationSecretsAsJson) {
-      //       if (key.startsWith("ENV_")) {
-      //          const secretKey = key.replace("ENV_", "")
-      //          applicationSecrets[secretKey] = Buffer.from(applicationSecretsAsJson[key]).toString('base64');
-      //       }
-      //    }
-      //    args.push(`applicationSecrets=${JSON.stringify(applicationSecrets)}`)
-      // }
-
-      // const applicationVariablesInput = core.getInput('applicationVariables', { required: false })
-      // let applicationVariablesAsJson = JSON.parse(applicationVariablesInput)
-      // let applicationVariables = {}
-      // if (!!applicationVariablesInput) {
-      //    core.debug('Adding application variables inputs')
-      //    args.push('--set-json')
-      //    for (const key in applicationVariablesAsJson) {
-      //       if (key.startsWith("ENV_")) {
-      //          const secretKey = key.replace("ENV_", "")
-      //          applicationVariables[secretKey] = applicationVariablesAsJson[key];
-      //       }
-      //    }
-      //    args.push(`applicationVariables=${JSON.stringify(applicationVariables)}`)
-      // }
-
       const overrideFilesInput = core.getInput('overrideFiles', {
          required: false
       })
@@ -202,6 +159,49 @@ export class HelmRenderEngine extends RenderEngine {
                args.push(file)
             })
          }
+      }
+
+      const overridesInput = core.getInput('overrides', { required: false })
+      if (!!overridesInput) {
+         core.debug('Adding overrides inputs')
+         const overrides = overridesInput.split('\n')
+         if (overrides.length > 0) {
+            const overrideValues = this.getOverrideValues(overrides)
+            overrideValues.forEach((overrideValue) => {
+               args.push('--set')
+               args.push(`${overrideValue.name}=${overrideValue.value}`)
+            })
+         }
+      }
+
+      const applicationSecretsInput = core.getInput('applicationSecrets', { required: false })
+      let applicationSecretsAsJson = JSON.parse(applicationSecretsInput)
+      let applicationSecrets = {}
+      if (!!applicationSecretsInput) {
+         core.debug('Adding application secret inputs')
+         args.push('--set-json')
+         for (const key in applicationSecretsAsJson) {
+            if (key.startsWith("ENV_")) {
+               const secretKey = key.replace("ENV_", "")
+               applicationSecrets[secretKey] = Buffer.from(applicationSecretsAsJson[key]).toString('base64');
+            }
+         }
+         args.push(`applicationSecrets=${JSON.stringify(applicationSecrets)}`)
+      }
+
+      const applicationVariablesInput = core.getInput('applicationVariables', { required: false })
+      let applicationVariablesAsJson = JSON.parse(applicationVariablesInput)
+      let applicationVariables = {}
+      if (!!applicationVariablesInput) {
+         core.debug('Adding application variables inputs')
+         args.push('--set-json')
+         for (const key in applicationVariablesAsJson) {
+            if (key.startsWith("ENV_")) {
+               const secretKey = key.replace("ENV_", "")
+               applicationVariables[secretKey] = applicationVariablesAsJson[key];
+            }
+         }
+         args.push(`applicationVariables=${JSON.stringify(applicationVariables)}`)
       }
 
       return args
