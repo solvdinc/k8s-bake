@@ -76,10 +76,15 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: tls
+          mountPath: "/etc/ssl/nginx"
+          readOnly: true
+        {{- with .Values.volumes }}
+        - name: {{ .name }}
+          mountPath: {{ .mountPath }}
+          readOnly: {{ default "false" .readOnly }}
+        {{- end }}  
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

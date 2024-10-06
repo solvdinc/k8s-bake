@@ -48,7 +48,6 @@ inputs:
    debug:
       description: 'Debug the output YAML'
       required: false
-
 outputs:
    manifestsBundle:
       description: 'The location of the manifest bundles created by bake action'
