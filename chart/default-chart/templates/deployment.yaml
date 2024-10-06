@@ -66,35 +66,19 @@ spec:
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
             {{- end }}
-            {{- range .Values.service.additionalPorts }}
-            - name: {{ .portName }}
-              containerPort: {{ .targetPort }}
-              protocol: TCP
-            {{- end }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
           volumeMounts:
-            - name: tls
-              mountPath: "/etc/ssl/nginx"
-              readOnly: true
-            {{- with .Values.volumes }}
-              - name: {{ .name }}
-              mountPath: {{ .mountPath }}
-              readOnly: true
-            {{- end }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-      volumes:
-        - name: tls
-          secret:
-            secretName: {{ printf "%s-%s" .Values.nameOverride "tls" }}
       {{- with .Values.volumes }}
-        - name: {{ .name }}
-          persistentVolumeClaim:
-            claimName: {{ .name }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
