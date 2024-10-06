@@ -1,3 +1,4 @@
+{{- $tag := .Values.image.tag -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -87,7 +88,7 @@ spec:
               mountPath: "/etc/ssl/nginx"
               readOnly: true
             {{- range .Values.volumes }}
-              - name: {{ printf "%s-%s" .Values.image.tag .name | trunc 63 | trimSuffix "-" }}
+              - name: {{ printf "%s-%s" $tag .name | trunc 63 | trimSuffix "-" }}
               mountPath: {{ .mountPath }}
               readOnly: true
             {{- end }}
@@ -97,7 +98,7 @@ spec:
           mountPath: "/etc/ssl/nginx"
           readOnly: true
         {{- range .Values.volumes }}
-        - name: {{ printf "%s-%s" .Values.image.tag .name | trunc 63 | trimSuffix "-" }}
+        - name: {{ printf "%s-%s" $tag .name | trunc 63 | trimSuffix "-" }}
           mountPath: {{ .mountPath }}
           readOnly: {{ default "false" .readOnly }}
         {{- end }}  
