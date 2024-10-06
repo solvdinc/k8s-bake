@@ -86,6 +86,7 @@ volumes:
   - name: uploads
     mountPath: /data/uploads
 
+
 # - name: foo
 #   secret:
 #     secretName: mysecret

@@ -1,4 +1,3 @@
-{{- $tag := .Values.image.tag -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -80,27 +79,25 @@ spec:
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           {{- end }}
+          {{- if .Values.resources }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.volumeMounts }}
+          {{- end }}
           volumeMounts:
             - name: tls
               mountPath: "/etc/ssl/nginx"
               readOnly: true
-            {{- range .Values.volumes }}
-              - name: {{ printf "%s-%s" $tag .name | trunc 63 | trimSuffix "-" }}
+          {{- range .Values.volumes }}
+            - name: {{ printf "%v-%v" $.Values.image.tag .name | trunc 63 | trimSuffix "-" }}
               mountPath: {{ .mountPath }}
-              readOnly: true
-            {{- end }}
-          {{- end }}
+              readOnly: {{ default "false" .readOnly }}
+          {{- end }}  
       volumes:
         - name: tls
-          mountPath: "/etc/ssl/nginx"
-          readOnly: true
+          persistentVolumeClaim: {{ printf "%v%v" .Values.nameOverride "-tls" }}
         {{- range .Values.volumes }}
-        - name: {{ printf "%s-%s" $tag .name | trunc 63 | trimSuffix "-" }}
-          mountPath: {{ .mountPath }}
-          readOnly: {{ default "false" .readOnly }}
+        - name: {{ printf "%v-%v" $.Values.image.tag .name | trunc 63 | trimSuffix "-" }}
+          persistentVolumeClaim: {{ printf "%v-%v-%v" $.Values.image.tag .name "claim" | trunc 63 | trimSuffix "-" }}
         {{- end }}  
       {{- with .Values.nodeSelector }}
       nodeSelector:

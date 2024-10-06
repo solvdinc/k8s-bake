@@ -1,10 +1,9 @@
-{{- $tag := .Values.image.tag -}}
-{{- range .Values.volumes }}
+{{- range .Values.volumes -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: {{ printf "%s-%s" $tag .name | trunc 63 | trimSuffix "-" }}
+    name: {{ printf "%v-%v-%v" $.Values.image.tag .name "claim" | trunc 63 | trimSuffix "-" }}
 spec:
   accessModes:
   - {{ default "ReadWriteOnce" .accessMode }}
@@ -12,4 +11,4 @@ spec:
   resources:
     requests:
       storage: {{ default "1Gi" .storage }}
-{{- end }}
+{{- end -}}
