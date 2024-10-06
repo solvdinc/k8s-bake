@@ -11,11 +11,19 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+      name: https
+    {{- if  .Values.service.port }}
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
-      name: http
-    {{- range .Values.service.aditionalPorts }}
+      {{ if .Values.service.name }}
+      name: {{ .Values.service.name }}
+      {{- end }}  
+    {{- end }}
+    {{- range .Values.service.additionalPorts }}
     - port: {{ .port }}
       targetPort: {{ .targetPort }}
       protocol: TCP

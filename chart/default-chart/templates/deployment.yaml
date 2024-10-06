@@ -58,10 +58,15 @@ spec:
           {{- end }}
           {{- end }}
           ports:
-            - name: http
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            {{ if .Values.service.targetPort }}
+            - name: app
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
-            {{- range .Values.service.aditionalPorts }}
+            {{- end }}
+            {{- range .Values.service.additionalPorts }}
             - name: {{ .portName }}
               containerPort: {{ .targetPort }}
               protocol: TCP
@@ -72,13 +77,24 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
+            - name: tls
+              mountPath: "/etc/ssl/nginx"
+              readOnly: true
+            {{- with .Values.volumes }}
+              - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              readOnly: true
+            {{- end }}
           {{- end }}
-      {{- with .Values.volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
+        - name: tls
+          secret:
+            secretName: {{ printf "%s-%s" .Values.nameOverride "tls" }}
+      {{- with .Values.volumes }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .name }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
