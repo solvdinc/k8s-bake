@@ -6,9 +6,9 @@ spec:
   secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
   privateKey:
     rotationPolicy: Always
-  commonName: {{ printf "%s.%s.%s" .Values.nameOverride .Values.cloud.region "cloudapp.azure.com" }}
+  commonName: {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
   dnsNames:
-    - {{ printf "%s.%s.%s" .Values.nameOverride .Values.cloud.region "cloudapp.azure.com" }}
+    - {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
   usages:
     - digital signature
     - key encipherment
