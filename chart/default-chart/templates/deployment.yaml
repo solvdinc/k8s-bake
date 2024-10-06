@@ -85,7 +85,7 @@ spec:
           {{- end }}
           volumeMounts:
             - name: tls
-              mountPath: "/etc/ssl/nginx"
+              mountPath: /etc/ssl/nginx
               readOnly: true
           {{- range .Values.volumes }}
             - name: {{ printf "%v-%v" $.Values.image.tag .name | trunc 63 | trimSuffix "-" }}
@@ -98,7 +98,8 @@ spec:
             secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
         {{- range .Values.volumes }}
         - name: {{ printf "%v-%v" $.Values.image.tag .name | trunc 63 | trimSuffix "-" }}
-          persistentVolumeClaim: {{ printf "%v-%v-%v" $.Values.image.tag .name "claim" | trunc 63 | trimSuffix "-" }}
+          persistentVolumeClaim: 
+            claimName: {{ printf "%v-%v-%v" $.Values.image.tag .name "claim" | trunc 63 | trimSuffix "-" }}
         {{- end }}  
       {{- with .Values.nodeSelector }}
       nodeSelector:
