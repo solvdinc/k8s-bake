@@ -6,9 +6,9 @@ metadata:
     name: {{ .name }}
 spec:
   accessModes:
-  - {{ default ReadWriteOnce .accessMode }}
-  storageClassName: {{ default managed-csi .storageClassName }}
+  - {{ default "ReadWriteOnce" .accessMode }}
+  storageClassName: {{ default "managed-csi" .storageClassName }}
   resources:
     requests:
-      storage: {{ default 1Gi .storage }}
+      storage: {{ default "1Gi" .storage }}
 {{- end }}
