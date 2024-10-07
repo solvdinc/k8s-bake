@@ -15,19 +15,5 @@ spec:
       targetPort: 443
       protocol: TCP
       name: https
-    {{- if  .Values.service.port }}
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
-      protocol: TCP
-      {{ if .Values.service.name }}
-      name: {{ .Values.service.name }}
-      {{- end }}  
-    {{- end }}
-    {{- range .Values.service.additionalPorts }}
-    - port: {{ .port }}
-      targetPort: {{ .targetPort }}
-      protocol: TCP
-      name: {{ .portName }}
-    {{- end }}
   selector:
     {{- include "application-chart.selectorLabels" . | nindent 4 }}
