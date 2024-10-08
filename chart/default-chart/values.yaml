@@ -82,9 +82,9 @@ resources: {}
 #   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
-volumes:
-  - name: uploads
-    mountPath: /data/uploads
+# volumes:
+#   - name: uploads
+#     mountPath: /data/uploads
 
 
 # - name: foo
