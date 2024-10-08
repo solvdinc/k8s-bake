@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-nameOverride: nombredeprueba
+# nameOverride: nombredeprueba
 
 replicaCount: 1
 
@@ -41,8 +41,8 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: ClusterIP
+# service:
+#   type: ClusterIP
 
 ingress:
   enabled: true
