@@ -187,8 +187,8 @@ export class HelmRenderEngine extends RenderEngine {
          core.debug('Adding application secret inputs')
          args.push('--set-json')
          for (const key in applicationSecretsAsJson) {
-            if (key.startsWith("ENV_")) {
-               const secretKey = key.replace("ENV_", "")
+            if (key.startsWith("RENV_")) {
+               const secretKey = key.replace("RENV_", "")
                applicationSecrets[secretKey] = Buffer.from(applicationSecretsAsJson[key]).toString('base64');
             }
          }
