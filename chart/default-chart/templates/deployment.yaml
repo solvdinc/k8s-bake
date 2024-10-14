@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "application-chart.fullname" . }}
+  name: {{ include "application-chart.name" . }}
   labels:
     {{- include "application-chart.labels" . | nindent 4 }}
 spec:
@@ -27,7 +27,9 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.serviceAccount.create -}}
       serviceAccountName: {{ .Values.nameOverride }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -58,19 +60,21 @@ spec:
           {{- end }}
           {{- end }}
           ports:
+          {{- if .Values.service.https.enabled }}
             - name: https
               containerPort: 443
               protocol: TCP
-            {{- if .Values.service.targetPort }}
+          {{- end }}
+          {{- if .Values.service.targetPort }}
             - name: app
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
-            {{- end }}
-            {{- range .Values.service.additionalPorts }}
+          {{- end }}
+          {{- range .Values.service.additionalPorts }}
             - name: {{ .name }}
               targetPort: {{ .targetPort }}
               protocol: {{ default "TCP" .protocol }}
-            {{- end }}
+          {{- end }}
           {{- if .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
@@ -83,24 +87,32 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
+          {{- if .Values.resources }}
           volumeMounts:
+          {{- if .Values.service.https.enabled }}
             - name: tls
               mountPath: /etc/ssl/nginx
               readOnly: true
+          {{- end }}
           {{- range .Values.volumes }}
             - name: {{ printf "%v-%v" $.Values.image.tag .name | trunc 63 | trimSuffix "-" }}
               mountPath: {{ .mountPath }}
               readOnly: {{ default "false" .readOnly }}
+          {{- end }}
           {{- end }}  
+      {{- if .Values.resources }}
       volumes:
+        {{- if .Values.service.https.enabled }}
         - name: tls
           secret:
             secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
+        {{- end }}
         {{- range .Values.volumes }}
         - name: {{ printf "%v-%v" $.Values.image.tag .name | trunc 63 | trimSuffix "-" }}
           persistentVolumeClaim: 
             claimName: {{ printf "%v-%v-%v" $.Values.image.tag .name "claim" | trunc 63 | trimSuffix "-" }}
         {{- end }}  
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

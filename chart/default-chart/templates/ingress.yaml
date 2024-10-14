@@ -3,7 +3,7 @@
 {{- $svcPort := .Values.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className }}
   {{- end }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -18,48 +18,57 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "application-chart.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    appgw.ingress.kubernetes.io/backend-path-prefix: {{ default "/" .Values.ingress.pathPrefix }}
+  {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingress.className }}
+  ingressClassName: {{ default "azure-application-gateway" .Values.ingress.className }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- if .Values.certificate.enabled }}
   tls:
-    {{- range .Values.ingress.tls }}
     - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+      {{- if eq "ClusterIP" .Values.service.type }}
+        - {{ printf "%s.%s" .Values.nameOverride "solvddev.com" }}
+      {{- else }}
+        - {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
+      {{- end }}
+      secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
   {{- end }}
   rules:   
-    {{- range .Values.ingress.hosts }}
-    {{- if .host }}
-    - host: {{ .host }}
-      http:
+    {{- if .Values.ingress.host }}
+    - host: {{ .Values.ingress.host }}
     {{- else }}
-    - http:
+    {{- if eq "ClusterIP" .Values.service.type }}
+    - host: {{ printf "%s.%s" .Values.nameOverride "solvddev.com" }}
+    {{- else }}
+    - host: {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
     {{- end }}
+    {{- end }}
+      http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
+          - path: {{ .Values.ingress.path }}
             {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
+            pathType: {{ default "ImplementationSpecific" .Values.ingress.pathType }}
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
                 port:
+                {{- if .Values.certificate.enabled }}
+                  number: 443
+                {{- else }}
                   number: {{ $svcPort }}
+                {{- end }}
               {{- else }}
               serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
+                {{- if .Values.certificate.enabled }}
+                servicePort: 443
+                {{- else }}
+                servicePort: {{ $svcPort }}
+                {{- end }}
               {{- end }}
-          {{- end }}
-    {{- end }}
 {{- end -}}
