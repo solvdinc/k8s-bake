@@ -146,18 +146,22 @@ export class HelmRenderEngine extends RenderEngine {
 
       args.push(chartPath)
 
+      const useOverrideFilesInput = core.getBooleanInput('useOverrideFiles') !== undefined ? core.getBooleanInput('useOverrideFiles') : false;
+
       const overrideFilesInput = core.getInput('overrideFiles', {
          required: false
       })
 
-      if (!!overrideFilesInput) {
-         core.debug('Adding overrides file inputs')
-         const overrideFiles = overrideFilesInput.split('\n')
-         if (overrideFiles.length > 0) {
-            overrideFiles.forEach((file) => {
-               args.push('-f')
-               args.push(file)
-            })
+      if (useOverrideFilesInput) {
+         if (!!overrideFilesInput) {
+            core.debug('Adding overrides file inputs')
+            const overrideFiles = overrideFilesInput.split('\n')
+            if (overrideFiles.length > 0) {
+               overrideFiles.forEach((file) => {
+                  args.push('-f')
+                  args.push(file)
+               })
+            }
          }
       }
 
