@@ -30,12 +30,8 @@ spec:
       {{- if .Values.serviceAccount.create -}}
       serviceAccountName: {{ .Values.nameOverride }}
       {{- end }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if or .Values.applicationSecrets .Values.applicationVariables }}
