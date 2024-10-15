@@ -188,7 +188,7 @@ export class HelmRenderEngine extends RenderEngine {
          args.push('--set-json')
          for (const key in applicationSecretsAsJson) {
             if (key.startsWith("BENV_")) {
-               const secretKey = key.replace("BENV_", "")
+               const secretKey = key.replace("RENV_", "")
                applicationSecrets[secretKey] = Buffer.from(applicationSecretsAsJson[key]).toString('base64');
             }
          }
@@ -203,7 +203,7 @@ export class HelmRenderEngine extends RenderEngine {
          args.push('--set-json')
          for (const key in applicationVariablesAsJson) {
             if (key.startsWith("BENV_")) {
-               const secretKey = key.replace("BENV_", "")
+               const secretKey = key.replace("RENV_", "")
                applicationVariables[secretKey] = applicationVariablesAsJson[key];
             }
          }
