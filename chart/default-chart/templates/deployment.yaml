@@ -38,7 +38,68 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-            
+          {{- if or .Values.applicationSecrets .Values.applicationVariables }}
+          env:
+          {{- if .Values.applicationSecrets }}
+          {{- range $key, $val := .Values.applicationSecrets }}
+          - name: {{ $key }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $.Values.nameOverride }}
+                key: {{ $key }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.applicationVariables }}
+          {{- range $key, $val := .Values.applicationVariables }}
+          - name: {{ $key }}
+            valueFrom:
+              configMapKeyRef:
+                name: {{ $.Values.nameOverride }}
+                key: {{ $key }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          ports:
+          {{- if .Values.service.https.enabled }}
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          {{- end }}
+          {{- if .Values.service.targetPort }}
+            - name: app
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          {{- end }}
+          {{- range .Values.service.additionalPorts }}
+            - name: {{ .name }}
+              targetPort: {{ .targetPort }}
+              protocol: {{ default "TCP" .protocol }}
+          {{- end }}
+          {{- if .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.resources }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          {{- if .Values.resources }}
+          volumeMounts:
+          {{- if .Values.service.https.enabled }}
+            - name: tls
+              mountPath: /etc/ssl/nginx
+              readOnly: true
+          {{- end }}
+          {{- range .Values.volumes }}
+            - name: {{ printf "%v-%v" $.Values.image.tag .name | trunc 63 | trimSuffix "-" }}
+              mountPath: {{ .mountPath }}
+              readOnly: {{ default "false" .readOnly }}
+          {{- end }}
+          {{- end }}  
       {{- if .Values.resources }}
       volumes:
         {{- if .Values.service.https.enabled }}

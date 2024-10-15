@@ -31,6 +31,6 @@ spec:
     - key encipherment
     - server auth
   issuerRef:
-    name: selfsigned
+    name: letsencrypt-production
     kind: ClusterIssuer
 {{- end }}
