@@ -11,7 +11,7 @@ spec:
   commonName: {{ .Values.ingress.host }}
   {{- else }}
   {{- if eq "ClusterIP" .Values.service.type }}
-  commonName: {{ printf "%s.%s" .Values.nameOverride "solvddev.com" }}
+  commonName: {{ printf "%s.%s.%s" .Values.nameOverride .Values.organizationIdentifier "solvddev.com" }}
   {{- else }}
   commonName: {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
   {{- end }}
@@ -21,7 +21,7 @@ spec:
     - {{ .Values.ingress.host }}
   {{- else }}
   {{- if eq "ClusterIP" .Values.service.type }}
-    - {{ printf "%s.%s" .Values.nameOverride "solvddev.com" }}
+    - {{ printf "%s.%s.%s" .Values.nameOverride .Values.organizationIdentifier "solvddev.com" }}
   {{- else }}
     - {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
   {{- end }}

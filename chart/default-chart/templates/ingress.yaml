@@ -31,7 +31,7 @@ spec:
   tls:
     - hosts:
       {{- if eq "ClusterIP" .Values.service.type }}
-        - {{ printf "%s.%s" .Values.nameOverride "solvddev.com" }}
+        - {{ printf "%s.%s.%s" .Values.nameOverride .Values.organizationIdentifier "solvddev.com" }}
       {{- else }}
         - {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
       {{- end }}
@@ -42,7 +42,7 @@ spec:
     - host: {{ .Values.ingress.host }}
     {{- else }}
     {{- if eq "ClusterIP" .Values.service.type }}
-    - host: {{ printf "%s.%s" .Values.nameOverride "solvddev.com" }}
+    - host: {{ printf "%s.%s.%s" .Values.nameOverride .Values.organizationIdentifier "solvddev.com" }}
     {{- else }}
     - host: {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
     {{- end }}
