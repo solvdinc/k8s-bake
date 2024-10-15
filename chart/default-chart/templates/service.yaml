@@ -11,20 +11,10 @@ metadata:
 spec:
   type: {{ default "ClusterIP" .Values.service.type }}
   ports:
-    {{- if or .Values.service.https.enabled .Values.certificate.enabled }}
-    - port: 443
+    - port: 80
       targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
-      name: https
-    {{- end }}
-    {{- if .Values.service.port }}
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
-      protocol: TCP
-      {{ if .Values.service.name }}
-      name: {{ .Values.service.name }}
-      {{- end }}  
-    {{- end }}
+      name: http
     {{- range .Values.service.additionalPorts }}
     - port: {{ .port }}
       targetPort: {{ .targetPort }}
