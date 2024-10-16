@@ -21,14 +21,11 @@ metadata:
   annotations:
     appgw.ingress.kubernetes.io/backend-path-prefix: {{ default "/" .Values.ingress.pathPrefix }}
     appgw.ingress.kubernetes.io/ssl-redirect: "true"
-    appgw.ingress.kubernetes.io/appgw-ssl-certificate: {{ .Values.nameOverride }}
   {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ default "azure-application-gateway" .Values.ingress.className }}
-  {{- end }}
   {{- if .Values.certificate.enabled }}
   tls:
     - hosts:
@@ -57,10 +54,18 @@ spec:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
-                port:
+                port:                  
+                  {{- if .Values.certificate.enabled }}
+                  number: 443
+                  {{- else }}
                   number: 80
+                  {{- end }}
               {{- else }}
               serviceName: {{ $fullName }}
+                {{- if .Values.certificate.enabled }}
+                servicePort: 443
+                {{- else }}
                 servicePort: 80
+                {{- end }}
               {{- end }}
 {{- end -}}
