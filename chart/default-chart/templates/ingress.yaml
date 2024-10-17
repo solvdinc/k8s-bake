@@ -41,7 +41,7 @@ spec:
       {{- if .Values.certificate.name }}
         secretName: {{ .Values.certificate.name }}
       {{- else }}
-        secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
+        secretName: {{ printf "%v%v" .Values.namespaceName "-tls" }}
       {{- end }}
   {{- end }}
   rules:   
