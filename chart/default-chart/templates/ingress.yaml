@@ -29,12 +29,20 @@ spec:
   {{- if .Values.certificate.enabled }}
   tls:
     - hosts:
+      {{- if .Values.ingress.host }}
+        - {{ .Values.ingress.host }}
+      {{- else }}
       {{- if eq "ClusterIP" .Values.service.type }}
         - {{ printf "%s.%s.%s" .Values.nameOverride .Values.organizationIdentifier "solvddev.com" }}
       {{- else }}
         - {{ printf "%s.%s.%s" .Values.nameOverride .Values.cluster.region "cloudapp.azure.com" }}
       {{- end }}
-      secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
+      {{- end }}
+      {{- if .Values.certificate.name }}
+        secretName: {{ .Values.certificate.name }}
+      {{- else }}
+        secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
+      {{- end }}
   {{- end }}
   rules:   
     {{- if .Values.ingress.host }}
