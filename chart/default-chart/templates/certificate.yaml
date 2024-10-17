@@ -4,7 +4,7 @@ kind: Certificate
 metadata:
   name: {{ .Values.nameOverride }}
 spec:
-  secretName: {{ printf "%v%v" .Values.namespaceName "-tls" }}
+  secretName: {{ printf "%v%v" .Values.nameOverride "-tls" }}
   privateKey:
     rotationPolicy: Always
   {{- if .Values.ingress.host }}
