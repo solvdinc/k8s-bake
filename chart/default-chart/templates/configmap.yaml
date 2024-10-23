@@ -5,6 +5,6 @@ metadata:
   name: {{ .Values.nameOverride }}
 data:
 {{- range $key, $val := .Values.applicationVariables }}
-  {{ $key }}: {{ $val }}
+  {{ $key }}: "{{ $val }}"
 {{- end }}
 {{- end }}
