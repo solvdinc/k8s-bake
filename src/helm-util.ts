@@ -1,18 +1,19 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import * as path from 'path'
-import * as fs from 'fs'
-import * as util from 'util'
-import * as toolCache from '@actions/tool-cache'
 import * as core from '@actions/core'
 import * as io from '@actions/io'
+import * as toolCache from '@actions/tool-cache'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as util from 'util'
 import {
-   getExecutableExtension,
-   isEqual,
-   LATEST,
-   setCachedToolPath,
-   getStableVerison
+  getExecutableExtension,
+  getStableVerison,
+  isEqual,
+  LATEST,
+  normalizeHelmVersion,
+  setCachedToolPath
 } from './utilities'
 
 const helmToolName = 'helm'
@@ -37,12 +38,14 @@ export function walkSync(dir, filelist = [], fileToFind) {
 }
 
 export async function downloadHelm(version: string): Promise<string> {
-   if (!version) {
-      version = await getStableVerison(helmToolName)
+   // Normalize version before any cache operations
+   let normalizedVersion = normalizeHelmVersion(version)
+   if (!normalizedVersion) {
+      normalizedVersion = await getStableVerison(helmToolName)
    }
-   let cachedToolpath = toolCache.find(helmToolName, version)
+   let cachedToolpath = toolCache.find(helmToolName, normalizedVersion)
    if (!cachedToolpath) {
-      cachedToolpath = await setCachedToolPath(helmToolName, version)
+      cachedToolpath = await setCachedToolPath(helmToolName, normalizedVersion)
    }
    const helmpath = findHelm(cachedToolpath)
    if (!helmpath) {
@@ -72,13 +75,15 @@ export async function getHelmPath() {
    let helmPath = ''
    const version = core.getInput('helm-version', {required: false})
    if (version) {
-      if (!!version && version != LATEST) {
-         helmPath = toolCache.find(helmToolName, version)
+      // Normalize version immediately after reading input to ensure consistent format
+      const normalizedVersion = normalizeHelmVersion(version)
+      if (!!normalizedVersion && normalizedVersion != LATEST) {
+         helmPath = toolCache.find(helmToolName, normalizedVersion)
       }
       if (helmPath) {
          helmPath = path.join(helmPath, `helm${getExecutableExtension()}`)
       } else {
-         helmPath = await installHelm(version)
+         helmPath = await installHelm(normalizedVersion)
       }
    } else {
       helmPath = await io.which(helmToolName, false)
@@ -102,9 +107,11 @@ export async function getHelmPath() {
 }
 
 export async function installHelm(version: string) {
-   if (isEqual(version, LATEST)) {
-      version = await getStableVerison(helmToolName)
+   // Normalize version before processing
+   let normalizedVersion = normalizeHelmVersion(version)
+   if (isEqual(normalizedVersion, LATEST)) {
+      normalizedVersion = await getStableVerison(helmToolName)
    }
-   core.debug(util.format('Downloading helm version %s', version))
-   return await downloadHelm(version)
+   core.debug(util.format('Downloading helm version %s', normalizedVersion))
+   return await downloadHelm(normalizedVersion)
 }
