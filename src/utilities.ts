@@ -159,21 +159,21 @@ const stableVersionUrls = {
 
 const downloadLinks = {
    Linux_x64: {
-      helm: 'https://get.helm.sh/helm-%s-linux-amd64.zip',
+      helm: 'https://get.helm.sh/helm-%s-linux-amd64.tar.gz',
       kompose:
          'https://github.com/kubernetes/kompose/releases/download/%s/kompose-linux-amd64',
       kubectl:
          'https://storage.googleapis.com/kubernetes-release/release/%s/bin/linux/amd64/kubectl'
    },
    Linux_arm64: {
-      helm: 'https://get.helm.sh/helm-%s-linux-arm64.zip',
+      helm: 'https://get.helm.sh/helm-%s-linux-arm64.tar.gz',
       kompose:
          'https://github.com/kubernetes/kompose/releases/download/%s/kompose-linux-arm64',
       kubectl:
          'https://storage.googleapis.com/kubernetes-release/release/%s/bin/linux/arm64/kubectl'
    },
    Darwin: {
-      helm: 'https://get.helm.sh/helm-%s-darwin-amd64.zip',
+      helm: 'https://get.helm.sh/helm-%s-darwin-amd64.tar.gz',
       kompose:
          'https://github.com/kubernetes/kompose/releases/download/%s/kompose-darwin-amd64',
       kubectl:
