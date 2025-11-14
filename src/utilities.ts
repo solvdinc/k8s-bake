@@ -31,6 +31,12 @@ export function getExecutableExtension(): string {
    return ''
 }
 
+export function normalizeHelmVersion(version: string): string {
+   if (!version || version === 'latest') return version
+   const trimmed = version.trim()
+   return trimmed.startsWith('v') ? trimmed : `v${trimmed}`
+}
+
 export async function execCommand(
    toolPath: string,
    args: string[],
@@ -68,7 +74,9 @@ export async function execCommand(
 export async function setCachedToolPath(toolName: string, version: string) {
    let cachedToolpath = ''
    let downloadPath = ''
-   const downloadUrl = getDownloadUrl(toolName, version)
+   // Normalize Helm versions before caching to ensure consistent cache keys
+   const normalizedVersion = toolName === 'helm' ? normalizeHelmVersion(version) : version
+   const downloadUrl = getDownloadUrl(toolName, normalizedVersion)
 
    try {
       downloadPath = await toolCache.downloadTool(downloadUrl)
@@ -84,14 +92,14 @@ export async function setCachedToolPath(toolName: string, version: string) {
       cachedToolpath = await toolCache.cacheDir(
          unzipedHelmPath,
          toolName,
-         version
+         normalizedVersion
       )
    } else {
       cachedToolpath = await toolCache.cacheFile(
          downloadPath,
          toolName + getExecutableExtension(),
          toolName,
-         version
+         normalizedVersion
       )
    }
 
@@ -109,7 +117,10 @@ export function getDownloadUrl(toolName: string, version: string): string {
       throw Error('Unknown OS or render engine type')
    }
 
-   return util.format(downloadLinks[systemAndArch][toolName], version)
+   // Normalize Helm versions to ensure consistent format with 'v' prefix
+   const normalizedVersion = toolName === 'helm' ? normalizeHelmVersion(version) : version
+
+   return util.format(downloadLinks[systemAndArch][toolName], normalizedVersion)
 }
 
 export async function getStableVerison(toolName: string) {
